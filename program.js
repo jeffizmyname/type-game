@@ -1,38 +1,41 @@
 let filed = document.getElementById('words')
 cursor = document.getElementById('cursor')
-word = getWords(1, "en")
+
 wordArr = ["test1", "test2"]
 wordSting = wordArr.join(" ")
 letterCounter = 0;
 
-function getWords(size, language) {
-    fetch(`https://random-word-api.herokuapp.com/word?lang=${language}&number=${size}`, {
-        method: 'GET'
-    }).then (response => {
+async function getWords(size, language) {
+    try {
+        const response = await fetch(`https://random-word-api.herokuapp.com/word?lang=${language}&number=${size}`, {
+            method: 'GET'
+        });
 
-        if(!response.ok) {
-            throw new Error('network response not ok')
+        if (!response.ok) {
+            throw new Error('Network response not ok');
         }
-        return response.json()
-    }).then (data => {
-        console.log(data)
-    }).catch(error => {
-        console.error('Error ' + error);
-    })
+
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
 
-function createWords(words) {
+async function createWords() {
+    const words = await getWords(1, "en")
     console.log(words)
     for(let i = 0; i < words.length; i++) {
         let letterSpan = document.createElement("span")
         letterSpan.innerHTML = words[i]
         letterSpan.id = i
         filed.appendChild(letterSpan)
-    }   
+    }
+    return words;   
 }
 
-createWords(wordSting)
+wordArr = createWords()
 
 document.addEventListener("keypress", (e) => {
     //console.log(e.key)
